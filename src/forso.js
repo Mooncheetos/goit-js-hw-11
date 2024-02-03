@@ -41,13 +41,28 @@ function displayImages(images) {
     const fragment = document.createDocumentFragment();
 
     images.forEach(image => {
+        const a = document.createElement('a');
+        a.href = image.largeImageURL;
+        a.setAttribute('data-lightbox', 'image-set');
+        a.setAttribute('data-title', image.tags);
+
+        const img = document.createElement('img');
+        img.src = image.webformatURL;
+        img.alt = image.tags;
+
+        a.appendChild(img);
+
         const div = document.createElement('div');
-        div.className = 'image-card';
-        div.innerHTML = `<a href="${image.largeImageURL}" data-lightbox="image-set" data-title="${image.tags}">
-                            <img src="${image.webformatURL}" alt="${image.tags}">
-                         </a>
-                         <div class="info">Likes: ${image.likes}, Views: ${image.views}, Comments: ${image.comments}, Downloads: ${image.downloads}</div>`;
-        fragment.appendChild(div);
+        div.className = 'info';
+        div.innerHTML = `Likes: ${image.likes}, Views: ${image.views}, Comments: ${image.comments}, Downloads: ${image.downloads}`;
+
+        a.appendChild(div);
+
+        const divCard = document.createElement('div');
+        divCard.className = 'image-card';
+        divCard.appendChild(a);
+
+        fragment.appendChild(divCard);
     });
 
     gallery.appendChild(fragment);
