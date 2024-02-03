@@ -15,6 +15,19 @@
   -webkit-text-size-adjust: 100%;
 }
 
+.image-card {
+  width: calc(33.33% - 20px);
+  margin: 10px;
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
+.image-card img {
+  width: 100%;
+  height: auto;
+}
+
 .loader {
   border: 4px solid #f3f3f3;
   border-top: 4px solid #3498db;
