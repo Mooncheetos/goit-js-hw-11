@@ -69,7 +69,6 @@ function displayImages(images) {
     });
 
     gallery.appendChild(fragment);
-
-    // Инициализация SimpleLightbox в конце функции displayImages
+    
     new SimpleLightbox('#gallery a').refresh();
 }
