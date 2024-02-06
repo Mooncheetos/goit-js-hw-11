@@ -1,6 +1,8 @@
 import iziToast from "izitoast";
 import SimpleLightbox from "simplelightbox";
 
+const apiKey = '42175181-9f2e4ea0c75ffabf50c3ef9f9';
+
 document.getElementById('search-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -11,33 +13,29 @@ document.getElementById('search-form').addEventListener('submit', async function
         return;
     }
 
-    searchImages(query);
+    try {
+        await searchImages(query);
+    } catch (error) {
+        console.error('Error fetching images:', error);
+        iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
+    }
 });
 
 async function searchImages(query) {
-    const apiKey = '42175181-9f2e4ea0c75ffabf50c3ef9f9';
     const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&safesearch=true`;
 
     iziToast.info({ title: 'Searching', message: 'Fetching images...', timeout: false, overlay: true, id: 'loading' });
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+    const response = await fetch(url);
+    const data = await response.json();
 
-        if (data.hits.length > 0) {
-            displayImages(data.hits);
-        } else {
-            iziToast.info({ title: 'No results', message: 'Sorry, there are no images matching your search query. Please try again!' });
-        }
-    } catch (error) {
-        console.error('Error fetching images:', error);
-        iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
-    } finally {
-        iziToast.destroy(document.querySelector('.iziToast-overlay'));
+    if (data.hits.length > 0) {
+        displayImages(data.hits);
+    } else {
+        iziToast.info({ title: 'No results', message: 'Sorry, there are no images matching your search query. Please try again!' });
     }
+    iziToast.destroy(document.querySelector('.iziToast-overlay'));
 }
-
-const lightbox = new SimpleLightbox({ elements: '#gallery a' });
 
 function displayImages(images) {
     const gallery = document.getElementById('gallery');
@@ -72,5 +70,6 @@ function displayImages(images) {
 
     gallery.appendChild(fragment);
 
-    lightbox.refresh();
+    // Инициализация SimpleLightbox в конце функции displayImages
+    new SimpleLightbox('#gallery a').refresh();
 }
