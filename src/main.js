@@ -1,4 +1,7 @@
-document.getElementById('search-form').addEventListener('submit', async function(event) {
+import iziToast from "izitoast";
+import SimpleLightbox from "simplelightbox";
+
+document.getElementById('search-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const query = document.getElementById('query').value.trim();
@@ -34,6 +37,8 @@ async function searchImages(query) {
     }
 }
 
+const lightbox = new SimpleLightbox({ elements: '#gallery a' });
+
 function displayImages(images) {
     const gallery = document.getElementById('gallery');
     gallery.innerHTML = '';
@@ -67,5 +72,5 @@ function displayImages(images) {
 
     gallery.appendChild(fragment);
 
-    new SimpleLightbox({ elements: '#gallery a' }).refresh();
+    lightbox.refresh();
 }
