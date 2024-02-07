@@ -1,7 +1,20 @@
-import iziToast from "izitoast";
-import SimpleLightbox from "simplelightbox";
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+const galleryContainer = document.querySelector('.gallery');
+const loaderContainer = document.querySelector('.loader');
 
 const apiKey = '42175181-9f2e4ea0c75ffabf50c3ef9f9';
+
+function toastSuccess(message) {
+    iziToast.success({
+        title: 'Success',
+        message: message,
+        position: 'topRight'
+    });
+}   
 
 document.getElementById('search-form').addEventListener('submit', async function (event) {
     event.preventDefault();
@@ -14,10 +27,16 @@ document.getElementById('search-form').addEventListener('submit', async function
     }
 
     try {
-        await searchImages(query);
+        loaderContainer.style.display = 'block';
+        const data = await searchImages(query);
+        displayImages(data.hits);
+        toastSuccess(`Was found: ${data.total} images`);
+        initializeLightbox();
     } catch (error) {
         console.error('Error fetching images:', error);
         iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
+    } finally {
+        loaderContainer.style.display = 'none';
     }
 });
 
@@ -27,19 +46,11 @@ async function searchImages(query) {
     iziToast.info({ title: 'Searching', message: 'Fetching images...', timeout: false, overlay: true, id: 'loading' });
 
     const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.hits.length > 0) {
-        displayImages(data.hits);
-    } else {
-        iziToast.info({ title: 'No results', message: 'Sorry, there are no images matching your search query. Please try again!' });
-    }
-    iziToast.destroy(document.querySelector('.iziToast-overlay'));
+    return response.json();
 }
 
 function displayImages(images) {
-    const gallery = document.getElementById('gallery');
-    gallery.innerHTML = '';
+    galleryContainer.innerHTML = '';
 
     const fragment = document.createDocumentFragment();
 
@@ -68,7 +79,7 @@ function displayImages(images) {
         fragment.appendChild(divCard);
     });
 
-    gallery.appendChild(fragment);
-    
+    galleryContainer.appendChild(fragment);
+
     new SimpleLightbox('#gallery a').refresh();
 }
