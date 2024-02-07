@@ -16,6 +16,14 @@ function toastSuccess(message) {
     });
 }   
 
+function toastError(message) {
+    iziToast.error({
+        title: 'Error',
+        message: message,
+        position: 'topRight'
+    });
+}
+
 document.getElementById('search-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -29,12 +37,16 @@ document.getElementById('search-form').addEventListener('submit', async function
     try {
         loaderContainer.style.display = 'block';
         const data = await searchImages(query);
-        displayImages(data.hits);
-        toastSuccess(`Was found: ${data.total} images`);
-        initializeLightbox();
+        if (data.hits.length > 0) {
+            displayImages(data.hits);
+            toastSuccess(`Was found: ${data.total} images`);
+            initializeLightbox();
+        } else {
+            toastError('Sorry, there are no images matching your search query. Please try again!');
+        }
     } catch (error) {
         console.error('Error fetching images:', error);
-        iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
+        toastError('Failed to fetch images.');
     } finally {
         loaderContainer.style.display = 'none';
     }
@@ -42,9 +54,6 @@ document.getElementById('search-form').addEventListener('submit', async function
 
 async function searchImages(query) {
     const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&safesearch=true`;
-
-    iziToast.info({ title: 'Searching', message: 'Fetching images...', timeout: false, overlay: true, id: 'loading' });
-
     const response = await fetch(url);
     return response.json();
 }
@@ -80,6 +89,8 @@ function displayImages(images) {
     });
 
     galleryContainer.appendChild(fragment);
+}
 
+function initializeLightbox() {
     new SimpleLightbox('#gallery a').refresh();
 }
