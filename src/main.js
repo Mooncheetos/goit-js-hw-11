@@ -5,6 +5,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const galleryContainer = document.querySelector('.gallery');
 const loaderContainer = document.querySelector('.loader');
+const searchForm = document.querySelector('.search-form');
 
 const apiKey = '42175181-9f2e4ea0c75ffabf50c3ef9f9';
 
@@ -24,7 +25,7 @@ function toastError(message) {
     });
 }
 
-document.getElementById('search-form').addEventListener('submit', async function (event) {
+searchForm.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const query = document.getElementById('query').value.trim();
@@ -59,8 +60,6 @@ async function searchImages(query) {
 }
 
 function displayImages(images) {
-    galleryContainer.innerHTML = '';
-
     const fragment = document.createDocumentFragment();
 
     images.forEach(image => {
@@ -88,9 +87,16 @@ function displayImages(images) {
         fragment.appendChild(divCard);
     });
 
+    galleryContainer.innerHTML = '';
     galleryContainer.appendChild(fragment);
 }
 
+let lightbox;
+
 function initializeLightbox() {
-    new SimpleLightbox('#gallery a').refresh();
+    if (!lightbox) {
+        lightbox = new SimpleLightbox('.gallery a');
+    } else {
+        lightbox.refresh();
+    }
 }
