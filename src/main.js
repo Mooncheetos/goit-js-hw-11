@@ -63,43 +63,22 @@ document.getElementById('search-form').addEventListener('submit', async function
 });
 
 function displayImages(images) {
-    const fragment = document.createDocumentFragment();
+    galleryContainer.innerHTML = '';
 
-    images.forEach(image => {
-        const a = document.createElement('a');
-        a.href = image.largeImageURL;
-        a.setAttribute('data-lightbox', 'image-set');
-        a.setAttribute('data-title', image.tags);
-
-        const img = document.createElement('img');
-        img.src = image.webformatURL;
-        img.alt = image.tags;
-
-        a.appendChild(img);
-
-        const div = document.createElement('div');
-        div.className = 'info';
-        div.innerHTML = `Likes: ${image.likes}, Views: ${image.views}, Comments: ${image.comments}, Downloads: ${image.downloads}`;
-
-        a.appendChild(div);
-
-        const divCard = document.createElement('div');
-        divCard.className = 'image-card';
-        divCard.appendChild(a);
-
-        fragment.appendChild(divCard);
+    const imageCards = images.map(image => {
+        return `
+            <div class="image-card">
+                <a href="${image.largeImageURL}" data-lightbox="image-set" data-title="${image.tags}">
+                    <img src="${image.webformatURL}" alt="${image.tags}">
+                    <div class="info">Likes: ${image.likes}, Views: ${image.views}, Comments: ${image.comments}, Downloads: ${image.downloads}</div>
+                </a>
+            </div>
+        `;
     });
 
-    galleryContainer.innerHTML = '';
-    galleryContainer.appendChild(fragment);
+    galleryContainer.innerHTML = imageCards.join('');
 }
 
-let lightbox;
-
 function initializeLightbox() {
-    if (!lightbox) {
-        lightbox = new SimpleLightbox('.gallery a');
-    } else {
-        lightbox.refresh();
-    }
+    new SimpleLightbox('#gallery a').refresh();
 }
